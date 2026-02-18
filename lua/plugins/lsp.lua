@@ -6,55 +6,45 @@ return {
     "williamboman/mason-lspconfig.nvim",
   },
   config = function()
-    -- Mason still handles binaries
     require("mason").setup()
-
     require("mason-lspconfig").setup({
       ensure_installed = {
         "bashls",
         "yamlls",
         "jsonls",
-        "terraformls",
-        "ansiblels",
         "pyright",
-        "gopls",
         "lua_ls",
+        "marksman",
       },
     })
 
-    -- Lua (Neovim aware)
     vim.lsp.config("lua_ls", {
       settings = {
         Lua = {
           diagnostics = { globals = { "vim" } },
-          workspace = { checkThirdParty = false },
+          workspace = {
+            checkThirdParty = false,
+            library = vim.api.nvim_get_runtime_file("", true),
+          },
         },
       },
     })
 
-    -- Servers
-    for _, server in ipairs({
-      "bashls",
-      "yamlls",
-      "jsonls",
-      "terraformls",
-      "ansiblels",
-      "pyright",
-      "gopls",
-    }) do
-      vim.lsp.config(server, {})
-    end
+    vim.lsp.config("yamlls", {
+      settings = {
+        yaml = {
+          schemaStore = { enable = true, url = "https://www.schemastore.org/api/json/catalog.json" },
+        },
+      },
+    })
 
-    -- Enable everything
     vim.lsp.enable({
       "lua_ls",
       "bashls",
       "yamlls",
       "jsonls",
-      "terraformls",
-      "ansiblels",
       "pyright",
-      "gopls",
+      "marksman",
     })
   end,
 }
